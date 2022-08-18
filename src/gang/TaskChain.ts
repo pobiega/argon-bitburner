@@ -102,13 +102,13 @@ export class TaskChain {
         return new TaskChain(tasks, true);
     }
 
-    static workFromChabo(ns: NS, chabo : Chabo, progressMulti = 1) : TaskChain {
+    // static workFromChabo(ns: NS, chabo : Chabo, progressMulti = 1) : TaskChain {
 
-    }
+    // }
 
-    static workFromTasks(ns: NS, tasks : Task[] = [], chabo? : Chabo, progressMulti = 1) : TaskChain | undefined {
+    // static workFromTasks(ns: NS, tasks : Task[] = [], chabo? : Chabo, progressMulti = 1) : TaskChain | undefined {
         
-    }
+    // }
 
     get hasTasks() : boolean {
         return this.tasks.length > 0;

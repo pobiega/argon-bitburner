@@ -10,14 +10,14 @@ import { NS } from "@ns";
  * 
  * @param {NS} ns 
  */
- export async function main(ns : NS): Promise<void> {
+export async function main(ns: NS): Promise<void> {
     const flags = new Flags(ns, [
         ["...", "", `Servers to deploy scripts: ${Object.values(Zerver.Scripts).join(", ")} to. When empty, will deploy to all deployable`],
         ["help", false, "For deploying defined scripts to targeted servers"]
     ]);
     const args = flags.args();
 
-    
+
     const serverNames = args._;
     let servers = Zerver.get(ns);
 
@@ -29,4 +29,4 @@ import { NS } from "@ns";
     const deployer = new Deployer(ns, cracker);
 
     await deployer.deployScriptsToServers(servers);
- }
+}

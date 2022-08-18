@@ -2,6 +2,7 @@ import { NS } from "@ns";
 import { StatsUI, UIModel } from "ui/StatsUI";
 import { NumberStack } from "lib/utils";
 import { Flags } from "/lib/Flags";
+import { xor } from "lodash";
 
 export async function main(ns : NS): Promise<void> {
 	const flags = new Flags(ns, [
@@ -26,27 +27,29 @@ export async function main(ns : NS): Promise<void> {
 		const hServerRamMax = ns.getServerMaxRam("home");
 		const hServerRamUsed = ns.getServerUsedRam("home");
 		const moneyCurr = ns.getServerMoneyAvailable("home");
-		const strExp = ns.getPlayer().strength_exp;
-		const defExp = ns.getPlayer().defense_exp;
-		const dexExp = ns.getPlayer().dexterity_exp;
-		const agiExp = ns.getPlayer().agility_exp;
-		const chrExp = ns.getPlayer().charisma_exp;
-		const repGained = ns.getPlayer().workRepGained;
+		const player = ns.getPlayer();
+		const strExp = player.exp.strength;
+		const defExp = player.exp.defense;
+		const dexExp = player.exp.dexterity;
+		const agiExp = player.exp.agility;
+		const chrExp = player.exp.charisma;
+		// const repGained = ns.getPlayer().workRepGained;
 
 		moneyBuffer.push(moneyCurr);
-		repBuffer.push(repGained);
+		// repBuffer.push(repGained);
 		// todo only show stat exp when it is actualy not 0 
 		strExpBuffer.push(strExp);
 		defExpBuffer.push(defExp);
 		dexExpBuffer.push(dexExp);
 		agiExpBuffer.push(agiExp);
 		chrExpBuffer.push(chrExp);
-				
+		
 		ui.update(new UIModel(
-			repBuffer.avgIncrement(),
+			// repBuffer.avgIncrement(),
+			0,
 			moneyBuffer.diff(),
-			ns.getScriptIncome()[0],
-			ns.getScriptExpGain(),
+			ns.getTotalScriptIncome()[0],
+			ns.getTotalScriptExpGain(),
 			strExpBuffer.avgIncrement(),
 			defExpBuffer.avgIncrement(),
 			dexExpBuffer.avgIncrement(),

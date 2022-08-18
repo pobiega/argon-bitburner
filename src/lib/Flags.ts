@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NS } from "@ns";
 import { toPrintableType } from "/lib/utils";
 
@@ -56,8 +57,8 @@ export class Flags {
     
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     args() : any {
-        const args = this.ns.flags(this.nsFlags);
-        const params = args._;
+        const args : any = this.ns.flags(this.nsFlags);
+        const params : any = args._;
 
         for (const i in this.paramDefaults) {
             if (typeof params[i] !== "undefined" && params[i] !== "") {

@@ -1,11 +1,14 @@
 import { NS, ProcessInfo } from '@ns'
 
 export async function main(ns: NS): Promise<void> {
-    const hashes: Record<string,number> = {}
+    const hashes: Record<string, number> = {}
 
     const files = ns.ls('home', '.js')
     for (const file of files) {
         const contents = ns.read(file)
+
+        if (!_.isString(contents)) continue;
+
         hashes[file] = getHash(contents)
     }
 
@@ -14,6 +17,7 @@ export async function main(ns: NS): Promise<void> {
 
         for (const file of files) {
             const contents = ns.read(file)
+            if (!_.isString(contents)) continue;
             const hash = getHash(contents)
 
             if (hash != hashes[file]) {

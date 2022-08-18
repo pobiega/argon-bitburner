@@ -7,5 +7,5 @@ import { NS } from '@ns'
  * @returns whether can access stock api
  */
 export function hasStockApi(ns : NS) : boolean {
-    return ns.getPlayer().has4SDataTixApi;
+    return ns.stock.has4SDataTIXAPI();
 }

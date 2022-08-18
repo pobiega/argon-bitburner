@@ -271,7 +271,7 @@ export class TaskQueue {
         return chaboPeaceTasks[0];
     }
 
-    createWorkTask(chabos : Chabo[] = []) : ChaboTasks | undefined {
+    createWorkTask(chabos : Chabo[] = []) : ChaboTasks[] | undefined {
         const workTasks = Task.get(this.ns).filter(t => t.isWork());
         return this.createSuitableTasks(workTasks, chabos);
     }

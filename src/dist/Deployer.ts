@@ -7,18 +7,18 @@ import { NS } from "@ns";
  * Will also try to crack before deploying.
  */
 export class Deployer {
-    
+
     ns: NS
     cracker: Cracker
     baseUrl: string
 
-    constructor(ns : NS, cracker : Cracker, baseUrl = "") {
+    constructor(ns: NS, cracker: Cracker, baseUrl = "") {
         this.ns = ns;
         this.cracker = cracker;
         this.baseUrl = baseUrl;
     }
 
-    async deployScriptsToServers(servers : Zerver[]): Promise<void> {
+    async deployScriptsToServers(servers: Zerver[]): Promise<void> {
         for (const server of servers) {
             if (server.areScriptsDeployed) {
                 continue;
@@ -28,17 +28,17 @@ export class Deployer {
                 this.ns.print("INFO Could not deploy to " + server.name);
                 continue;
             }
-            
+
             await this.deployScripts(server.name);
             await this.ns.sleep(100);
         }
     }
 
-    async deployScripts(host : string): Promise<void> {
-        await this.ns.scp(this.getScripts(), this.ns.getHostname(), host);
+    async deployScripts(host: string): Promise<void> {
+        await this.ns.scp(this.getScripts(), host, this.ns.getHostname());
     }
 
-    getScripts() : string[] {
+    getScripts(): string[] {
         return Object.values(Zerver.Scripts).map(script => `${this.baseUrl}${script}`);
     }
 }

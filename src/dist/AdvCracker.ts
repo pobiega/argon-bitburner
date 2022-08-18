@@ -18,7 +18,7 @@ export class AdvCracker extends Cracker {
 
         try {
             missingCracks.forEach(prog => {
-                if (this.ns.purchaseProgram(prog)) this.ns.toast("Bought new crack: " + prog, "info", 5000);
+                if (this.ns.singularity.purchaseProgram(prog)) this.ns.toast("Bought new crack: " + prog, "info", 5000);
             });
         } catch (err) {
             this.ns.print("Could not buy any crack: " + err);
@@ -29,7 +29,7 @@ export class AdvCracker extends Cracker {
 
     buyTor() : boolean {
         try {
-            if (this.ns.purchaseTor()) {
+            if (this.ns.singularity.purchaseTor()) {
                 this.ns.toast("Bought TOR router", "info", 5000);
                 return true;
             } 

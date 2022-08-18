@@ -1,6 +1,8 @@
 import { NS } from '@ns'
 import { Zerver } from '/server/Zerver';
 
+type LogVariant = "success" | "error" | "info" | "warning";
+
 /**
  * Solves Coding Contracts
  * 
@@ -12,11 +14,11 @@ import { Zerver } from '/server/Zerver';
 export class Contractor {
     ns: NS
 
-    constructor(ns : NS) {
+    constructor(ns: NS) {
         this.ns = ns;
     }
 
-    findServers() : Zerver[] {
+    findServers(): Zerver[] {
         return Zerver.get(this.ns).filter(s => s.hasContract);
     }
 
@@ -25,7 +27,7 @@ export class Contractor {
      * 
      * @param dry will only print results instead of solving
      */
-    solveAll(dry = false) : void {
+    solveAll(dry = false): void {
         const servers = this.findServers();
 
         for (const server of servers) {
@@ -34,10 +36,9 @@ export class Contractor {
                 const data = this.ns.codingcontract.getData(contractFile, server.name);
                 const solved = this.solve(name, data, server.name, contractFile, dry);
 
-                
-                let variant;
+                let variant : LogVariant;
                 let logLevel;
-                let msg = `${server.name} ${contractFile} - ${name}`; 
+                let msg = `${server.name} ${contractFile} - ${name}`;
 
                 if (typeof solved === "undefined") {
                     variant = "info";
@@ -46,7 +47,7 @@ export class Contractor {
                 } else if (solved) {
                     variant = "success";
                     logLevel = "INFO";
-                    msg =  msg + ` - ${solved}`;
+                    msg = msg + ` - ${solved}`;
                 } else {
                     variant = "error";
                     logLevel = "ERROR";
@@ -64,7 +65,7 @@ export class Contractor {
     /**
      * Solve a specific Coding Contract
      */
-    solve(name : string, data : any, host : string, contractFile : string, dry = false) : string | boolean | undefined {
+    solve(name: string, data: any, host: string, contractFile: string, dry = false): string | boolean | undefined {
         let result;
 
         switch (name) {
@@ -88,7 +89,7 @@ export class Contractor {
                 break;
             case "Unique Paths in a Grid II":
                 result = this.uniquePathsII(data);
-                break;            
+                break;
             case "Generate IP Addresses":
                 result = this.generateIps(data);
                 break;
@@ -117,7 +118,7 @@ export class Contractor {
                 result = this.sanitizeParentheses(data);
                 break;
             default:
-                break;    
+                break;
         }
 
         if (typeof result === "undefined") {
@@ -132,17 +133,17 @@ export class Contractor {
 
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-ignore result can be number[]
-        return this.ns.codingcontract.attempt(result, contractFile, host, {returnReward: true})
+        return this.ns.codingcontract.attempt(result, contractFile, host, { returnReward: true })
     }
 
     /**
      * Minimum Path Sum in a Triangle
      */
-    solveTriangleSum(arrayData : number[][]) : number {
+    solveTriangleSum(arrayData: number[][]): number {
         const triangle = arrayData;
-        let nextArray : number[] = [];
+        let nextArray: number[] = [];
         let previousArray = triangle[0];
-       
+
         for (let i = 1; i < triangle.length; i++) {
             nextArray = [];
             for (let j = 0; j < triangle[i].length; j++) {
@@ -153,60 +154,60 @@ export class Contractor {
                 } else {
                     nextArray.push(Math.min(previousArray[j], previousArray[j - 1]) + triangle[i][j]);
                 }
-    
+
             }
-    
+
             previousArray = nextArray;
         }
-    
+
         return Math.min.apply(null, nextArray);
     }
 
     /**
      * Unique Paths in a Grid II
      */
-    uniquePathsII(grid : number[][], ignoreFirst = false, ignoreLast = false) : number {
+    uniquePathsII(grid: number[][], ignoreFirst = false, ignoreLast = false): number {
         const rightMoves = grid[0].length - 1;
         const downMoves = grid.length - 1;
-    
+
         let totalPossiblePaths = Math.round(this.factorialDivision(rightMoves + downMoves, rightMoves) / (this.factorial(downMoves)));
-    
+
         for (let i = 0; i < grid.length; i++) {
             for (let j = 0; j < grid[i].length; j++) {
-    
+
                 if (grid[i][j] == 1 && (!ignoreFirst || (i != 0 || j != 0)) && (!ignoreLast || (i != grid.length - 1 || j != grid[i].length - 1))) {
                     const newArray = [];
                     for (let k = i; k < grid.length; k++) {
                         newArray.push(grid[k].slice(j, grid[i].length));
                     }
-    
+
                     let removedPaths = this.uniquePathsII(newArray, true, ignoreLast);
                     removedPaths *= this.uniquePathsI([i + 1, j + 1]);
-    
+
                     totalPossiblePaths -= removedPaths;
                 }
             }
-    
+
         }
-    
+
         return totalPossiblePaths;
     }
 
     /**
      * Unique Paths in a Grid I
      */
-    uniquePathsI(grid : number[]) : number {
+    uniquePathsI(grid: number[]): number {
         const rightMoves = grid[0] - 1;
         const downMoves = grid[1] - 1;
-    
+
         return Math.round(this.factorialDivision(rightMoves + downMoves, rightMoves) / (this.factorial(downMoves)));
     }
 
-    factorial(n : number) : number {
+    factorial(n: number): number {
         return this.factorialDivision(n, 1);
     }
-    
-    factorialDivision(n : number, d : number) : number {
+
+    factorialDivision(n: number, d: number): number {
         if (n == 0 || n == 1 || n == d)
             return 1;
         return this.factorialDivision(n - 1, d) * n;
@@ -215,11 +216,11 @@ export class Contractor {
     /**
      * Generate IP Addresses
      */
-    generateIps(num : number) : string[] {
-        const numStr : string = num.toString();
+    generateIps(num: number): string[] {
+        const numStr: string = num.toString();
         const length = numStr.length;
-        const ips : string[] = [];
-    
+        const ips: string[] = [];
+
         for (let i = 1; i < length - 2; i++) {
             for (let j = i + 1; j < length - 1; j++) {
                 for (let k = j + 1; k < length; k++) {
@@ -230,21 +231,21 @@ export class Contractor {
                         numStr.slice(k, numStr.length)
                     ];
                     let isValid = true;
-    
+
                     ip.forEach((seg, i) => {
                         isValid = isValid && this.isValidIpSegment(seg, i);
                     });
-    
+
                     if (isValid) ips.push(ip.join("."));
                 }
-    
+
             }
         }
-    
+
         return ips;
     }
 
-    isValidIpSegment(segment : string | string[] | number, idx : number) : boolean{
+    isValidIpSegment(segment: string | string[] | number, idx: number): boolean {
         if (idx === 0 && typeof segment === "string" && segment === "0") return false;
         if (idx === 0 && typeof segment === "number" && segment === 0) return false;
         if ((Array.isArray(segment) && segment[0] === "0")) return false;
@@ -258,7 +259,7 @@ export class Contractor {
     /**
      * Algorithmic Stock Trader I
      */
-    stockTraderI(data : number[]) : number {
+    stockTraderI(data: number[]): number {
         const transactionsMax = 1;
         const prices = data;
         const days = prices.length;
@@ -269,7 +270,7 @@ export class Contractor {
     /**
      * Algorithmic Stock Trader II
      */
-    stockTraderII(data : number[]) : number {
+    stockTraderII(data: number[]): number {
         const transactionsMax = Math.ceil(data.length / 2);
         const prices = data;
         const days = prices.length;
@@ -280,61 +281,59 @@ export class Contractor {
     /**
      * Algorithmic Stock Trader III
      */
-    stockTraderIII(data : number[]) : number {
+    stockTraderIII(data: number[]): number {
         const transactionsMax = 2;
         const prices = data;
         const days = prices.length;
 
         return this.maxProfit(prices, days, transactionsMax);
     }
-    
+
     /**
      * Algorithmic Stock Trader IV
      */
-    stockTraderIV(data : [number, number[]]) : number {
+    stockTraderIV(data: [number, number[]]): number {
         const transactionsMax = data[0];
         const prices = data[1];
         const days = prices.length;
 
         return this.maxProfit(prices, days, transactionsMax);
     }
-    
 
-    maxProfit(prices : number[], days : number, transMax : number) : number {
-        const profit : number[][] = Array(transMax + 1).fill(0)
+
+    maxProfit(prices: number[], days: number, transMax: number): number {
+        const profit: number[][] = Array(transMax + 1).fill(0)
             .map(x => {
-                const dayArr : number[] = Array(days + 1).fill(0);
+                const dayArr: number[] = Array(days + 1).fill(0);
                 return dayArr;
             });
 
         for (let i = 0; i <= transMax; i++)
             profit[i][0] = 0;
-    
+
         for (let j = 0; j <= days; j++)
             profit[0][j] = 0;
-    
-        for (let i = 1; i <= transMax; i++)
-        {
-            for (let j = 1; j < days; j++)
-            {
+
+        for (let i = 1; i <= transMax; i++) {
+            for (let j = 1; j < days; j++) {
                 let max_so_far = 0;
-    
+
                 for (let m = 0; m < j; m++)
-                max_so_far = Math.max(max_so_far, prices[j] - prices[m] + profit[i - 1][m]);
-    
-                profit[i][j] = Math.max(profit[i] [j - 1], max_so_far);
+                    max_so_far = Math.max(max_so_far, prices[j] - prices[m] + profit[i - 1][m]);
+
+                profit[i][j] = Math.max(profit[i][j - 1], max_so_far);
             }
         }
 
         const result = profit[transMax][days - 1];
-    
+
         return result;
     }
 
     /**
      * Find Largest Prime Factor
      */
-    factor(num : number) : number {
+    factor(num: number): number {
         for (let div = 2; div <= Math.sqrt(num); div++) {
             if (num % div != 0) {
                 continue;
@@ -349,7 +348,7 @@ export class Contractor {
     /**
      * Spiralize Matrix
      */
-    spiral(arr : number[][], accum : number[] = []) : number[] {
+    spiral(arr: number[][], accum: number[] = []): number[] {
         if (arr.length === 0 || arr[0].length === 0) {
             return accum;
         }
@@ -378,7 +377,7 @@ export class Contractor {
         return this.spiral(arr, accum);
     }
 
-    column(arr : number[][], index : number) : number[] {
+    column(arr: number[][], index: number): number[] {
         const res = [];
         for (let i = 0; i < arr.length; i++) {
             const elm = arr[i].splice(index, 1)[0];
@@ -392,7 +391,7 @@ export class Contractor {
     /**
      * Merge Overlapping Intervals
      */
-    mergeOverlap(intervals : number[][]) : number[][] {
+    mergeOverlap(intervals: number[][]): number[][] {
         intervals.sort(([minA], [minB]) => minA - minB);
         for (let i = 0; i < intervals.length; i++) {
             for (let j = i + 1; j < intervals.length; j++) {
@@ -414,62 +413,62 @@ export class Contractor {
     /**
      * Total Ways to Sum
      */
-    totalWayToSum(data : number) : number {
+    totalWayToSum(data: number): number {
         const cache = {};
         const n = data;
         const result = this.twts(n, n, cache);
-        
+
         return result - 1;
     }
-         
-         
-    twts(limit : number, n : number, cache : {[key: number]: {[key: number]: number}} = {}) : number {
+
+
+    twts(limit: number, n: number, cache: { [key: number]: { [key: number]: number } } = {}): number {
         if (n < 1) {
             return 1;
         }
-         
+
         if (limit == 1) {
             return 1;
         }
-         
+
         if (n < limit) {
             return this.twts(n, n, cache = {});
         }
-         
+
         if (n in cache) {
-            const c=cache[n];
-         
+            const c = cache[n];
+
             if (limit in c) {
                 return c[limit];
             }
         }
-         
+
         let s = 0;
-         
+
         for (let i = 1; i <= limit; i++) {
-            s += this.twts(i, n-i, cache);
+            s += this.twts(i, n - i, cache);
         }
-         
+
         if (!(n in cache)) {
             cache[n] = {};
         }
-         
-        cache[n][limit] = s; 
-        
+
+        cache[n][limit] = s;
+
         return s;
     }
 
     /**
      * Find All Valid Math Expressions
      */
-    findAllValidMathExpr(data : [string, number]) : string[] {
+    findAllValidMathExpr(data: [string, number]): string[] {
         const s = data[0];
         const n = data[1];
-         
+
         return this.findExpr(s, n, "");
     }
 
-    findExpr(s : string, n : number, expr : string) : string[] {
+    findExpr(s: string, n: number, expr: string): string[] {
         if (s.length == 0) {
             if (eval(expr) == n) {
                 return [expr]
@@ -477,114 +476,114 @@ export class Contractor {
                 return []
             }
         }
-         
-        let results : string[] = [];
-         
+
+        let results: string[] = [];
+
         if (s.startsWith("0")) {
             const sliced = s.slice(1);
-         
+
             if (expr.length == 0) {
-                return this.findExpr(sliced, n, expr+"0");
+                return this.findExpr(sliced, n, expr + "0");
             }
-         
+
             results = results.concat(
-                this.findExpr(sliced, n, expr+"+0"),
-                this.findExpr(sliced, n, expr+"-0"),
-                this.findExpr(sliced, n, expr+"*0"),
+                this.findExpr(sliced, n, expr + "+0"),
+                this.findExpr(sliced, n, expr + "-0"),
+                this.findExpr(sliced, n, expr + "*0"),
             );
-         
+
             return results;
         }
-         
-         
+
+
         const maxLength = s.length;
-        let ops : string[] = [];
-         
+        let ops: string[] = [];
+
         if (expr.length == 0) {
             ops = ["", "-"];
-         
+
         } else {
-           ops = ["-", "+", "*"];
+            ops = ["-", "+", "*"];
         }
-         
+
         for (const op of ops) {
-            for (let i=1; i <= maxLength; i++) {
+            for (let i = 1; i <= maxLength; i++) {
                 results = results.concat(
-                    this.findExpr(s.slice(i), n, expr+op+s.slice(0, i))
+                    this.findExpr(s.slice(i), n, expr + op + s.slice(0, i))
                 );
             }
         }
-         
+
         return results;
     }
 
     /**
      * Subarray with Maximum Sum
      */
-    findMaxSubArraySum(arr : number[]) : number {
+    findMaxSubArraySum(arr: number[]): number {
         if (arr.length == 0) {
             return 0;
         }
-         
+
         if (arr.length == 1) {
             return arr[0];
         }
-         
+
         let sum = this.findMaxSubArraySum(arr.slice(1));
         let s = 0;
-         
+
         for (let i = 0; i < arr.length; i++) {
             s += arr[i];
             if (s > sum) {
                 sum = s;
             }
         }
-         
+
         return sum;
     }
 
     /**
      * Array Jumping Game
      */
-    findJump(data : number[], pos : number) : number {
+    findJump(data: number[], pos: number): number {
 
         const maxJump = data[pos];
 
         if (pos + maxJump >= data.length - 1) {
             return 1;
         }
-            
-        for (let i=1;i<=maxJump;i++) {
+
+        for (let i = 1; i <= maxJump; i++) {
             if (this.findJump(data, pos + i) == 1) {
                 return 1;
             }
         }
-            
+
         return 0;
     }
 
     /**
      * Sanitize Parentheses in Expression
      */
-    sanitizeParentheses(data : string) : string[] {
-        const context = {"maxLeftLength":0}
+    sanitizeParentheses(data: string): string[] {
+        const context = { "maxLeftLength": 0 }
         let exprs = this.findSanitized(data, 0, context);
-        exprs = exprs.filter(e=>e.length>=context["maxLeftLength"]).sort();
+        exprs = exprs.filter(e => e.length >= context["maxLeftLength"]).sort();
 
-        for (let i=0;i<exprs.length-1;i++) {
-            while (exprs[i]==exprs[i+1]) {
-                exprs.splice(i+1, 1);
+        for (let i = 0; i < exprs.length - 1; i++) {
+            while (exprs[i] == exprs[i + 1]) {
+                exprs.splice(i + 1, 1);
             }
         }
         return exprs;
     }
-         
-         
-    findSanitized(s : string, pos : number, context : {maxLeftLength: number}) : string[] {
+
+
+    findSanitized(s: string, pos: number, context: { maxLeftLength: number }): string[] {
         if (s.length < context["maxLeftLength"]) {
             return [];
         }
-    
+
         if (pos == s.length) {
             if (this.validateParentheses(s)) {
                 if (s.length > context["maxLeftLength"]) {
@@ -595,35 +594,35 @@ export class Contractor {
                 return [];
             }
         }
-    
-        let results : string[] = [];
+
+        let results: string[] = [];
         const c = s[pos];
 
         if (c == "(" || c == ")") {
             results = results.concat(
-                this.findSanitized(s, pos+1, context),
-                this.findSanitized(s.slice(0, pos)+s.slice(pos+1), pos, context)
+                this.findSanitized(s, pos + 1, context),
+                this.findSanitized(s.slice(0, pos) + s.slice(pos + 1), pos, context)
             );
         } else {
             results = results.concat(
-                this.findSanitized(s, pos+1, context)
+                this.findSanitized(s, pos + 1, context)
             );
         }
         return results;
     }
-         
-         
-    validateParentheses(s : string) : boolean {
+
+
+    validateParentheses(s: string): boolean {
         let n = 0;
 
-        for (let i=0;i<s.length;i++) {
+        for (let i = 0; i < s.length; i++) {
             if (s[i] == "(") {
                 n++;
             }
             if (s[i] == ")") {
                 n--;
             }
-            if (n<0) {
+            if (n < 0) {
                 return false;
             }
         }
