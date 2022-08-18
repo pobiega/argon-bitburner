@@ -7,7 +7,7 @@ import { NS } from "@ns";
 /**
  * For purchasing or upgrading servers
  */
-export async function main(ns : NS): Promise<void>  {
+export async function main(ns: NS): Promise<void> {
 	const flags = new Flags(ns, [
 		["_", "8gb", "Amount of ram in GB to purchase"],
 		["max", false, "When given, the max possible amount of servers will be bought"],
@@ -36,13 +36,18 @@ export async function main(ns : NS): Promise<void>  {
 
 	ns.tprintf(`There are ${purchaser.getFreeSlots()} free server slots`);
 	ns.tprintf(`Upgrade possible: ${purchaser.canUpgradeServers()}`)
-	ns.tprintf(`Possible next upgrade could be from [min: ${asFormatGB(purchaser.getRamMin())}|max: ${asFormatGB(purchaser.getRamMax())}] to ${asFormatGB(purchaser.getRamMaxUpgrade())} for ${asFormat(purchaser.getUpgradeCosts())}`);	
+	ns.tprintf(`Possible next upgrade could be from [min: ${asFormatGB(purchaser.getRamMin())}|max: ${asFormatGB(purchaser.getRamMax())}] to ${asFormatGB(purchaser.getRamMaxUpgrade())} for ${asFormat(purchaser.getUpgradeCosts())}`);
+
+	if (!purchaser.canUpgradeServers()) {
+		// don't ask the player to upgrade when they can't
+		return;
+	}
 
 	const prompt = await ns.prompt(`Upgrading to ${doMax ? "MAX " : ""} ${asFormatGB(ram)} will cost you ${asFormat(purchaser.getCostTotal(ram))}`);
 
 	if (!prompt) {
 		return;
 	}
-	
+
 	purchaser.buyOrUpgradeServers(ram);
 }
