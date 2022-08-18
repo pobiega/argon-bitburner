@@ -36,12 +36,18 @@ export async function main(ns: NS): Promise<void> {
 
 	ns.tprintf(`There are ${purchaser.getFreeSlots()} free server slots`);
 	ns.tprintf(`Upgrade possible: ${purchaser.canUpgradeServers()}`)
-	ns.tprintf(`Possible next upgrade could be from [min: ${asFormatGB(purchaser.getRamMin())}|max: ${asFormatGB(purchaser.getRamMax())}] to ${asFormatGB(purchaser.getRamMaxUpgrade())} for ${asFormat(purchaser.getUpgradeCosts())}`);
 
-	if (!purchaser.canUpgradeServers()) {
+	const maxPossible = purchaser.getRamMaxUpgrade();
+	const currentMin = purchaser.getRamMin();
+
+	if (!purchaser.canUpgradeServers() || currentMin === maxPossible) {
 		// don't ask the player to upgrade when they can't
+		ns.tprintf(`Current servers are [min: ${asFormatGB(currentMin)}|max: ${asFormatGB(purchaser.getRamMax())}]`);
+
 		return;
 	}
+
+	ns.tprintf(`Possible next upgrade could be from [min: ${asFormatGB(currentMin)}|max: ${asFormatGB(purchaser.getRamMax())}] to ${asFormatGB(maxPossible)} for ${asFormat(purchaser.getUpgradeCosts())}`);
 
 	const prompt = await ns.prompt(`Upgrading to ${doMax ? "MAX " : ""} ${asFormatGB(ram)} will cost you ${asFormat(purchaser.getCostTotal(ram))}`);
 

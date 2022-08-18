@@ -141,7 +141,9 @@ export class Purchaser {
 			this.shutdownServer(host);
 			const name = this.buyNew(ram);
 
-			return _.isUndefined(name);
+			// TODO: why would this return.. this?
+			// return _.isUndefined(name);
+			return true;
 		}
 
 		return false;
