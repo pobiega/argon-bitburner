@@ -36,7 +36,7 @@ export class Contractor {
                 const data = this.ns.codingcontract.getData(contractFile, server.name);
                 const solved = this.solve(name, data, server.name, contractFile, dry);
 
-                let variant : LogVariant;
+                let variant: LogVariant;
                 let logLevel;
                 let msg = `${server.name} ${contractFile} - ${name}`;
 
@@ -65,6 +65,7 @@ export class Contractor {
     /**
      * Solve a specific Coding Contract
      */
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
     solve(name: string, data: any, host: string, contractFile: string, dry = false): string | boolean | undefined {
         let result;
 
@@ -116,6 +117,9 @@ export class Contractor {
                 break;
             case "Sanitize Parentheses in Expression":
                 result = this.sanitizeParentheses(data);
+                break;
+            case "Encryption I: Caesar Cipher":
+                result = this.encryption1(data);
                 break;
             default:
                 break;
@@ -216,33 +220,31 @@ export class Contractor {
     /**
      * Generate IP Addresses
      */
-    generateIps(num: number): string[] {
-        const numStr: string = num.toString();
-        const length = numStr.length;
-        const ips: string[] = [];
-
-        for (let i = 1; i < length - 2; i++) {
-            for (let j = i + 1; j < length - 1; j++) {
-                for (let k = j + 1; k < length; k++) {
-                    const ip = [
-                        numStr.slice(0, i),
-                        numStr.slice(i, j),
-                        numStr.slice(j, k),
-                        numStr.slice(k, numStr.length)
-                    ];
-                    let isValid = true;
-
-                    ip.forEach((seg, i) => {
-                        isValid = isValid && this.isValidIpSegment(seg, i);
-                    });
-
-                    if (isValid) ips.push(ip.join("."));
+    generateIps(data: string): string[] {
+        if (typeof data !== "string") throw new Error("solver expected string");
+        const ret: string[] = [];
+        for (let a = 1; a <= 3; ++a) {
+            for (let b = 1; b <= 3; ++b) {
+                for (let c = 1; c <= 3; ++c) {
+                    for (let d = 1; d <= 3; ++d) {
+                        if (a + b + c + d === data.length) {
+                            const A = parseInt(data.substring(0, a), 10);
+                            const B = parseInt(data.substring(a, a + b), 10);
+                            const C = parseInt(data.substring(a + b, a + b + c), 10);
+                            const D = parseInt(data.substring(a + b + c, a + b + c + d), 10);
+                            if (A <= 255 && B <= 255 && C <= 255 && D <= 255) {
+                                const ip: string = [A.toString(), ".", B.toString(), ".", C.toString(), ".", D.toString()].join("");
+                                if (ip.length === data.length + 3) {
+                                    ret.push(ip);
+                                }
+                            }
+                        }
+                    }
                 }
-
             }
         }
 
-        return ips;
+        return ret;
     }
 
     isValidIpSegment(segment: string | string[] | number, idx: number): boolean {
@@ -299,7 +301,6 @@ export class Contractor {
 
         return this.maxProfit(prices, days, transactionsMax);
     }
-
 
     maxProfit(prices: number[], days: number, transMax: number): number {
         const profit: number[][] = Array(transMax + 1).fill(0)
@@ -420,7 +421,6 @@ export class Contractor {
 
         return result - 1;
     }
-
 
     twts(limit: number, n: number, cache: { [key: number]: { [key: number]: number } } = {}): number {
         if (n < 1) {
@@ -578,7 +578,6 @@ export class Contractor {
         return exprs;
     }
 
-
     findSanitized(s: string, pos: number, context: { maxLeftLength: number }): string[] {
         if (s.length < context["maxLeftLength"]) {
             return [];
@@ -611,7 +610,6 @@ export class Contractor {
         return results;
     }
 
-
     validateParentheses(s: string): boolean {
         let n = 0;
 
@@ -628,5 +626,13 @@ export class Contractor {
         }
 
         return n == 0;
+    }
+
+    encryption1(data: [string, number]): string {
+        const cipher = [...data[0]]
+            .map((a) => (a === " " ? a : String.fromCharCode(((a.charCodeAt(0) - 65 - data[1] + 26) % 26) + 65)))
+            .join("");
+
+        return cipher;
     }
 }
